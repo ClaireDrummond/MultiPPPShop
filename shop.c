@@ -6,7 +6,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-// a structure is a custom data type
+// Modelling the entities using a struct
+// a struct is a custom data type
 // product structure
 struct Product {
     // each Product has name and a price
@@ -18,26 +19,33 @@ struct Product {
 struct ProductStock {
     // each ProductStock has a product and a quantity
 	struct Product product;
+	//contains an integer that is a quantity
 	int quantity;
 };
+
 // shop structure
 struct Shop {
-    // a shop will have cash (this is the opening cash in the shop)
+    // amount of money in the the shop
 	double cash;
-    // the shop will have a list of its stock
+    // this is the stock in the shop
 	struct ProductStock stock[20];
     // this is used to track the shop stock array
 	int index;
 };
+
 //customer structure
 struct Customer {
     // each Customer has a name and a budget and a shopping list
 	char* name;
+	// double means it can be a decimal number
 	double budget;
+	// an array of product stock
+	//array brackets must go after identifer
 	struct ProductStock shoppingList[10];
+	//keep track of the value
 	int index;
 };
-// take in a product. Print the name and the Price
+// takes in a product. Print the name and the Price
 void printProduct(struct Product p)
 {
 	printf("PRODUCT NAME: %s \nPRODUCT PRICE: %.2f\n", p.name, p.price);
@@ -57,9 +65,21 @@ void printCustomer(struct Customer c)
 	}
 }
 
+struct Product findProduct(struct Shop s, char* n){
+   // get product from shop 
+   struct Product p;
+   for (int i = 0; i < s.index; i++){
+	   //accessing the product
+      if(strcmp(s.stock[i].product.name,n)==0){
+        p = s.stock[i].product;
+      }
+   }
+   return p;
+};
+
 struct Shop createAndStockShop()
 {
-	struct Shop shop = { 200 };
+	
     FILE * fp;
     char * line = NULL;
     size_t len = 0;
@@ -70,7 +90,12 @@ struct Shop createAndStockShop()
     if (fp == NULL)
         exit(EXIT_FAILURE);
 
-    
+   // read the first line from the file
+   getline(&line,&len,fp);
+   double cashinshop = atof(line);
+   //open shop with cash taken from first line of file
+   struct Shop shop = {cashinshop};
+   //create the stock by looping through the file   
     while ((read = getline(&line, &len, fp)) != -1) {
         // printf("Retrieved line of length %zu:\n", read);
         // printf("%s IS A LINE", line);
